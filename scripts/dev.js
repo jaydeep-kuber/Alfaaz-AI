@@ -33,11 +33,16 @@ if (!filteredArgs.includes("-H") && !filteredArgs.includes("--hostname")) {
   filteredArgs.push("-H", process.env.HOSTNAME || "0.0.0.0");
 }
 
-const nextBin = path.resolve(__dirname, "../node_modules/.bin/next");
+const isWindows = process.platform === "win32";
+const nextBin = path.resolve(
+  __dirname,
+  `../node_modules/.bin/${isWindows ? "next.cmd" : "next"}`
+);
 
 const child = spawn(nextBin, ["dev", ...filteredArgs], {
   stdio: "inherit",
   env: process.env,
+  shell: isWindows,
 });
 
 child.on("exit", (code) => {

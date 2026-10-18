@@ -9,9 +9,8 @@ export default defineConfig({
   out: "./drizzle",
   dialect: "postgresql",
   dbCredentials: {
-    url:
-      process.env.DATABASE_URL ||
-      "postgresql://qalam:qalam_dev_password@localhost:5432/qalam_dev",
+    url: process.env.DATABASE_URL ||
+      "postgresql://alfaaz:alfaaz_dev_password@localhost:5432/alfaaz_dev",
   },
   verbose: true,
   strict: true,

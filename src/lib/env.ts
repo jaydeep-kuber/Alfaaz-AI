@@ -1,14 +1,14 @@
 import { z } from "zod";
 
 /**
- * Environment configuration schema for Qalam.
+ * Environment configuration schema for Alfaaz.
  * Validates required runtime variables and safely handles defaults.
  */
 const envSchema = z.object({
   DATABASE_URL: z
     .string()
     .min(1, "DATABASE_URL is required")
-    .default("postgresql://qalam:qalam_dev_password@localhost:5432/qalam_dev"),
+    .default("postgresql://alfaaz:alfaaz123@localhost:5432/alfaaz_dev"),
   AUTH_SECRET: z
     .string()
     .min(1, "AUTH_SECRET is required")
@@ -24,7 +24,7 @@ const envSchema = z.object({
   SMTP_FROM: z
     .string()
     .min(1, "SMTP_FROM is required")
-    .default("Qalam <noreply@qalam.local>"),
+    .default("Alfaaz <noreply@alfaaz.local>"),
   ALLOWED_EMAIL_DOMAINS: z
     .string()
     .default("gmail.com,outlook.com,hotmail.com,yahoo.com,icloud.com"),

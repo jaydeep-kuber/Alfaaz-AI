@@ -1,5 +1,5 @@
 {
-  "name": "Qalam",
+  "name": "Alfaaz",
   "description": "Sanctuary for Hindi and English poetry, shayari, stories, and quiet literary thoughts.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]

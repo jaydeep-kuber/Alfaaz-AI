@@ -1,7 +1,7 @@
 import zxcvbn from "zxcvbn";
 
 /**
- * Validation rules and utilities for Qalam AUTH-2 Sign-up.
+ * Validation rules and utilities for Alfaaz AUTH-2 Sign-up.
  * Shared between server enforcement and client feedback.
  */
 

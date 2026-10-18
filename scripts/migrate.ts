@@ -9,7 +9,7 @@ config({ path: ".env" });
 async function runMigrations() {
   const connectionString =
     process.env.DATABASE_URL ||
-    "postgresql://qalam:qalam_dev_password@localhost:5432/qalam_dev";
+    "postgresql://alfaaz:alfaaz123@localhost:5432/alfaaz_dev";
 
   console.log("[Migration] Initializing connection to PostgreSQL...");
   const pool = new pg.Pool({ connectionString });
@@ -42,7 +42,7 @@ async function runMigrations() {
     }
   } catch (error: any) {
     // Sanitized error logging without leaking connection credentials
-    console.error(`[Migration Error] Failed to apply migrations: ${error.message || "Unknown error"}`);
+    console.error(`[Migration Error] Failed to apply migrations:`, error);
     process.exit(1);
   } finally {
     await pool.end();

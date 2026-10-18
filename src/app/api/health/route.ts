@@ -7,7 +7,7 @@ import { NextResponse } from "next/server";
 export async function GET() {
   return NextResponse.json({
     status: "healthy",
-    service: "qalam-app",
+    service: "alfaaz-app",
     timestamp: new Date().toISOString(),
   });
 }

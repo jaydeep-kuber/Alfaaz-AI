@@ -1,5 +1,4 @@
-import { config } from "dotenv";
-config({ path: ".env" });
+import "dotenv/config";
 
 import { sendEmail } from "../src/lib/email";
 import { env } from "../src/lib/env";
@@ -9,13 +8,13 @@ import { env } from "../src/lib/env";
  * Exercises the shared email-sending module (src/lib/email) using SMTP_* env vars.
  */
 async function main() {
-  const testRecipient = process.env.TEST_EMAIL_RECIPIENT || "writer@qalam.local";
-  const subject = "Qalam AUTH-1 SMTP Test";
+  const testRecipient = process.env.TEST_EMAIL_RECIPIENT || "writer@alfaaz.local";
+  const subject = "Alfaaz AUTH-1 SMTP Test";
   const timestamp = new Date().toISOString();
-  const textBody = `This is a verification email for Qalam AUTH-1 scaffold and local infrastructure.\n\nDispatched at: ${timestamp}\nTarget Recipient: ${testRecipient}\nSMTP Endpoint: ${env.SMTP_HOST}:${env.SMTP_PORT}\nSender: ${env.SMTP_FROM}`;
+  const textBody = `This is a verification email for Alfaaz AUTH-1 scaffold and local infrastructure.\n\nDispatched at: ${timestamp}\nTarget Recipient: ${testRecipient}\nSMTP Endpoint: ${env.SMTP_HOST}:${env.SMTP_PORT}\nSender: ${env.SMTP_FROM}`;
   const htmlBody = `
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; padding: 24px; background: #fff8f5; color: #1f1b17; border-radius: 8px;">
-      <h2 style="color: #293343; margin-top: 0;">Qalam &mdash; AUTH-1 SMTP Test</h2>
+      <h2 style="color: #293343; margin-top: 0;">Alfaaz &mdash; AUTH-1 SMTP Test</h2>
       <p>This verification email confirms that the centralized SMTP sending module is operational and configured properly.</p>
       <div style="background: #ffffff; padding: 16px; border: 1px solid #c5c6cc; border-radius: 6px; margin: 16px 0;">
         <p style="margin: 4px 0;"><strong>Subject:</strong> ${subject}</p>

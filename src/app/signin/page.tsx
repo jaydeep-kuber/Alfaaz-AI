@@ -1,14 +1,63 @@
 "use client";
 
-import React, { Suspense } from "react";
+import React, { Suspense, useState } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { CheckCircle2, Eye, ArrowRight } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { CheckCircle2, AlertCircle, Eye, EyeOff, ArrowRight, Loader2, LogOut, User } from "lucide-react";
 import { APP_NAME, APP_NAME_HINDI } from "@/src/lib/constants";
+import { authClient } from "@/src/lib/auth/auth-client";
 
 function SignInContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const notificationMessage = searchParams.get("message");
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const { data: session } = authClient.useSession();
+
+  const handleSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.trim() || !password) {
+      setErrorMessage("Please enter both your email address and password.");
+      return;
+    }
+
+    setLoading(true);
+    setErrorMessage(null);
+
+    try {
+      const res = await authClient.signIn.email({
+        email: email.trim().toLowerCase(),
+        password,
+      });
+
+      if (res?.error) {
+        const errCode = (res.error as any)?.code;
+        const errMsg = res.error.message || "Invalid credentials.";
+        if (errCode === "EMAIL_NOT_VERIFIED" || errMsg.toLowerCase().includes("verify")) {
+          setErrorMessage("Your email address is not verified yet. Please check your inbox or verify your account.");
+        } else {
+          setErrorMessage(errMsg || "Invalid email or password. Please try again.");
+        }
+      } else {
+        router.refresh();
+      }
+    } catch (err: any) {
+      setErrorMessage(err?.message || "An unexpected error occurred during sign in.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSignOut = async () => {
+    await authClient.signOut();
+    router.refresh();
+  };
 
   return (
     <div className="min-h-screen w-full flex flex-col lg:flex-row bg-[#FAF6EF] text-[#1f1b17]">
@@ -29,86 +78,191 @@ function SignInContent() {
             </div>
           </header>
 
-          {/* Headline */}
-          <div className="mb-8">
-            <h1 className="font-serif text-3xl sm:text-4xl font-normal text-[#293343] tracking-tight mb-2">
-              Sign in
-            </h1>
-            <p className="text-sm text-[#675d52] leading-relaxed">
-              Return to your drafts, poetry, and quiet ideas.
-            </p>
-          </div>
+          {/* Active Session Display */}
+          {session?.user ? (
+            <div className="space-y-6">
+              <div className="mb-4">
+                <h1 className="font-serif text-3xl sm:text-4xl font-normal text-[#293343] tracking-tight mb-2">
+                  Welcome back
+                </h1>
+                <p className="text-sm text-[#675d52] leading-relaxed">
+                  You are currently signed in to your literary sanctuary.
+                </p>
+              </div>
 
-          {/* Success Banner (Displayed upon redirect from Sign-up) */}
-          {notificationMessage && (
-            <div
-              role="status"
-              className="mb-6 p-4 rounded-xl bg-[#e6f4ea] border border-[#34a853]/30 text-[#137333] text-sm flex items-start gap-3"
-            >
-              <CheckCircle2 className="w-5 h-5 shrink-0 mt-0.5 text-[#137333]" />
-              <div className="flex-1 font-medium leading-snug">{notificationMessage}</div>
+              <div className="p-6 rounded-2xl bg-white border border-[#E2D7C8] shadow-sm space-y-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-[#293343] text-white flex items-center justify-center font-serif text-lg font-medium">
+                    {session.user.name?.charAt(0).toUpperCase() || <User className="w-5 h-5" />}
+                  </div>
+                  <div>
+                    <h3 className="font-serif text-lg font-medium text-[#293343]">
+                      {session.user.name}
+                    </h3>
+                    <p className="text-sm text-[#675d52] font-mono">
+                      {session.user.email}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="pt-3 border-t border-[#E2D7C8]/60 flex items-center justify-between">
+                  <span className="inline-flex items-center gap-1.5 text-xs text-[#137333] font-medium bg-[#e6f4ea] px-3 py-1 rounded-full">
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    Session Active
+                  </span>
+
+                  <button
+                    type="button"
+                    onClick={handleSignOut}
+                    className="inline-flex items-center gap-2 text-xs font-medium text-[#b91c1c] hover:text-[#991b1b] px-3 py-1.5 rounded-lg hover:bg-[#fde8e8] transition-colors cursor-pointer"
+                  >
+                    <LogOut className="w-3.5 h-3.5" />
+                    Sign out
+                  </button>
+                </div>
+              </div>
             </div>
+          ) : (
+            <>
+              {/* Headline */}
+              <div className="mb-8">
+                <h1 className="font-serif text-3xl sm:text-4xl font-normal text-[#293343] tracking-tight mb-2">
+                  Sign in
+                </h1>
+                <p className="text-sm text-[#675d52] leading-relaxed">
+                  Return to your drafts, poetry, and quiet ideas.
+                </p>
+              </div>
+
+              {/* Notification Banner (e.g. from Sign-up redirect) */}
+              {notificationMessage && (
+                <div
+                  role="status"
+                  className="mb-6 p-4 rounded-xl bg-[#e6f4ea] border border-[#34a853]/30 text-[#137333] text-sm flex items-start gap-3"
+                >
+                  <CheckCircle2 className="w-5 h-5 shrink-0 mt-0.5 text-[#137333]" />
+                  <div className="flex-1 font-medium leading-snug">{notificationMessage}</div>
+                </div>
+              )}
+
+              {/* Error Banner */}
+              {errorMessage && (
+                <div
+                  role="alert"
+                  className="mb-6 p-4 rounded-xl bg-[#fde8e8] border border-[#ef4444]/30 text-[#b91c1c] text-sm flex items-start gap-3 animate-in fade-in duration-200"
+                >
+                  <AlertCircle className="w-5 h-5 shrink-0 mt-0.5 text-[#b91c1c]" />
+                  <div className="flex-1 font-medium leading-snug">{errorMessage}</div>
+                </div>
+              )}
+
+              {/* Interactive Sign In Form */}
+              <form onSubmit={handleSignIn} className="space-y-5" noValidate>
+                <div>
+                  <label
+                    htmlFor="signin-email"
+                    className="block text-[11px] font-semibold uppercase tracking-wider text-[#675d52] mb-1.5"
+                  >
+                    Email address
+                  </label>
+                  <input
+                    id="signin-email"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      if (errorMessage) setErrorMessage(null);
+                    }}
+                    placeholder="poet@alfaaz.app"
+                    disabled={loading}
+                    className="w-full h-12 px-4 rounded-[10px] bg-white text-[#1f1b17] text-[15px] border border-[#E2D7C8] focus:border-[#293343] focus:ring-2 focus:ring-[#293343]/15 focus:outline-none transition-all placeholder:text-[#8A7F73]/60 disabled:opacity-60 disabled:cursor-not-allowed"
+                  />
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label
+                      htmlFor="signin-password"
+                      className="text-[11px] font-semibold uppercase tracking-wider text-[#675d52]"
+                    >
+                      Password
+                    </label>
+                    <span className="text-xs text-[#8A7F73] hover:text-[#293343] cursor-pointer transition-colors">
+                      Forgot password?
+                    </span>
+                  </div>
+                  <div className="relative">
+                    <input
+                      id="signin-password"
+                      type={showPassword ? "text" : "password"}
+                      autoComplete="current-password"
+                      required
+                      value={password}
+                      onChange={(e) => {
+                        setPassword(e.target.value);
+                        if (errorMessage) setErrorMessage(null);
+                      }}
+                      placeholder="••••••••••••"
+                      disabled={loading}
+                      className="w-full h-12 pl-4 pr-11 rounded-[10px] bg-white text-[#1f1b17] text-[15px] border border-[#E2D7C8] focus:border-[#293343] focus:ring-2 focus:ring-[#293343]/15 focus:outline-none transition-all placeholder:text-[#8A7F73]/60 disabled:opacity-60 disabled:cursor-not-allowed"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      disabled={loading}
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#8A7F73] hover:text-[#293343] transition-colors p-1"
+                    >
+                      {showPassword ? (
+                        <EyeOff className="w-4 h-4" />
+                      ) : (
+                        <Eye className="w-4 h-4" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="pt-2">
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full h-12 px-6 rounded-[10px] bg-[#293343] hover:bg-[#1f2835] active:bg-[#171f2a] text-white font-medium text-[15px] shadow-sm hover:shadow transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                  >
+                    {loading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <span>Signing in...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>Sign in</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+
+              {/* Link back to Sign Up */}
+              <div className="mt-8 text-center text-sm text-[#675d52]">
+                <span>Don't have an account? </span>
+                <Link
+                  href="/signup"
+                  className="font-medium text-[#293343] underline underline-offset-4 hover:text-black transition-colors"
+                >
+                  Sign up
+                </Link>
+              </div>
+            </>
           )}
-
-          {/* Scaffold Sign In Form (Design placeholder - Auth flow in future ticket) */}
-          <div className="space-y-5">
-            <div>
-              <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#675d52] mb-1.5">
-                Email address
-              </label>
-              <input
-                type="email"
-                placeholder="poet@alfaaz.app"
-                disabled
-                className="w-full h-12 px-4 rounded-[10px] bg-white/70 text-[#1f1b17] text-[15px] border border-[#E2D7C8] opacity-80 cursor-not-allowed"
-              />
-            </div>
-
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="text-[11px] font-semibold uppercase tracking-wider text-[#675d52]">
-                  Password
-                </label>
-                <span className="text-xs text-[#8A7F73]">Forgot password?</span>
-              </div>
-              <div className="relative">
-                <input
-                  type="password"
-                  placeholder="••••••••••••"
-                  disabled
-                  className="w-full h-12 px-4 rounded-[10px] bg-white/70 text-[#1f1b17] text-[15px] border border-[#E2D7C8] opacity-80 cursor-not-allowed"
-                />
-              </div>
-            </div>
-
-            <div className="pt-2">
-              <button
-                type="button"
-                disabled
-                className="w-full h-12 px-6 rounded-[10px] bg-[#293343] text-white font-medium text-[15px] opacity-75 cursor-not-allowed flex items-center justify-center gap-2"
-              >
-                <span>Sign in</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-
-          {/* Link back to Sign Up */}
-          <div className="mt-8 text-center text-sm text-[#675d52]">
-            <span>Don't have an account? </span>
-            <Link
-              href="/signup"
-              className="font-medium text-[#293343] underline underline-offset-4 hover:text-black transition-colors"
-            >
-              Sign up
-            </Link>
-          </div>
         </div>
 
         {/* Footer */}
         <footer className="mt-12 pt-8 border-t border-[#E2D7C8]/60 space-y-3 text-center">
           <p className="text-[11px] uppercase tracking-widest text-[#8A7F73] font-medium">
-            Kalam &amp; Alfaaz Literary Systems &nbsp;•&nbsp; Quiet Terms &nbsp;•&nbsp; Privacy Note
+            Alfaaz Literary Systems &nbsp;•&nbsp; Quiet Terms &nbsp;•&nbsp; Privacy Note
           </p>
         </footer>
       </section>
@@ -142,7 +296,7 @@ function SignInContent() {
             <span className="w-1.5 h-1.5 rounded-full bg-[#8A7F73]/50" />
           </div>
           <span className="text-[11px] uppercase tracking-wider text-[#8A7F73]">
-            Kalam Engine
+            Alfaaz Engine
           </span>
         </div>
       </section>

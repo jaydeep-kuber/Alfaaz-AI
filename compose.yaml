@@ -1,12 +1,12 @@
 # ==============================================================================
-# Qalam - Local Development Infrastructure (AUTH-1)
+# Alfaaz - Local Development Infrastructure (AUTH-1)
 # Services:
 #   1. app: Next.js Web Application
 #   2. db: PostgreSQL Database with named volume for persistence
 #   3. mailpit: Local SMTP Testing Server & Web Inspection UI
 # ==============================================================================
 
-name: qalam
+name: alfaaz
 
 services:
   # ----------------------------------------------------------------------------
@@ -16,20 +16,20 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: qalam_app
+    container_name: alfaaz_frontend
     ports:
       - "${PORT:-3000}:3000"
     environment:
       - NODE_ENV=development
       - PORT=3000
-      - DATABASE_URL=postgresql://${POSTGRES_USER:-qalam}:${POSTGRES_PASSWORD:-qalam_dev_password}@db:5432/${POSTGRES_DB:-qalam_dev}
+      - DATABASE_URL=${DOCKER_DATABASE_URL:-postgresql://${POSTGRES_USER:-alfaaz}:${POSTGRES_PASSWORD:-alfaaz123}@db:5432/${POSTGRES_DB:-alfaaz_dev}}
       - AUTH_SECRET=${AUTH_SECRET}
       - BASE_URL=${BASE_URL:-http://localhost:3000}
       - SMTP_HOST=mailpit
       - SMTP_PORT=1025
       - SMTP_USER=${SMTP_USER:-}
       - SMTP_PASS=${SMTP_PASS:-}
-      - SMTP_FROM=${SMTP_FROM:-Qalam <noreply@qalam.local>}
+      - SMTP_FROM=${SMTP_FROM:-Alfaaz <noreply@alfaaz.local>}
       - ALLOWED_EMAIL_DOMAINS=${ALLOWED_EMAIL_DOMAINS:-gmail.com,outlook.com,hotmail.com,yahoo.com,icloud.com}
     depends_on:
       db:
@@ -49,17 +49,17 @@ services:
   # ----------------------------------------------------------------------------
   db:
     image: postgres:16-alpine
-    container_name: qalam_db
+    container_name: alfaaz_db
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-qalam}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-qalam_dev_password}
-      POSTGRES_DB: ${POSTGRES_DB:-qalam_dev}
+      POSTGRES_USER: ${POSTGRES_USER:-alfaaz}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-alfaaz123}
+      POSTGRES_DB: ${POSTGRES_DB:-alfaaz_dev}
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-qalam} -d ${POSTGRES_DB:-qalam_dev}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-alfaaz} -d ${POSTGRES_DB:-alfaaz_dev}"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -71,7 +71,7 @@ services:
   # ----------------------------------------------------------------------------
   mailpit:
     image: axllent/mailpit:latest
-    container_name: qalam_mailpit
+    container_name: alfaaz_mailpit
     ports:
       - "${MAILPIT_SMTP_PORT:-1025}:1025" # SMTP port
       - "${MAILPIT_WEB_PORT:-8025}:8025"   # Web UI inspection port
@@ -91,4 +91,4 @@ services:
 # ------------------------------------------------------------------------------
 volumes:
   postgres_data:
-    name: qalam_postgres_data
+    name: alfaaz_postgres_data

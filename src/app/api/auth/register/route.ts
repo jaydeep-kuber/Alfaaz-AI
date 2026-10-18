@@ -3,7 +3,7 @@ import { auth } from "@/src/lib/auth/auth";
 import { validateConfirmPassword } from "@/src/lib/validation/auth";
 
 /**
- * Dedicated registration endpoint for Qalam AUTH-2.
+ * Dedicated registration endpoint for Alfaaz AUTH-2.
  * Acts as a thin wrapper around Better Auth's official signUpEmail API.
  * Better Auth before-hooks and database hooks enforce name rules,
  * email normalization, domain allowlist, password strength, and uniqueness.

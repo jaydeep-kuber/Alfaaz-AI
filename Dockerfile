@@ -5,11 +5,11 @@ WORKDIR /app
 # Install libc6-compat for Next.js and wget for Docker healthcheck
 RUN apk add --no-cache libc6-compat wget
 
-# Copy dependency manifests
-COPY package.json package-lock.json* ./
+# Copy dependency manifests and npm configuration
+COPY package.json package-lock.json* .npmrc* ./
 
 # Install dependencies (including tsx and migration tools)
-RUN npm install
+RUN npm install --legacy-peer-deps
 
 # Copy application files
 COPY . .

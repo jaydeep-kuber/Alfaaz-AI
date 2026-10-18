@@ -1,6 +1,6 @@
-# Qalam (कलम) — Scaffold, Infrastructure & Sign-up (AUTH-1 & AUTH-2)
+# Alfaaz (अल्फ़ाज़) — Scaffold, Infrastructure & Sign-up (AUTH-1 & AUTH-2)
 
-Qalam is a mobile-responsive sanctuary where a writer stores poetry, shayari, stories, and raw ideas in Hindi (Devanagari and Roman scripts) and English.
+Alfaaz is a mobile-responsive sanctuary where a writer stores poetry, shayari, stories, and raw ideas in Hindi (Devanagari and Roman scripts) and English.
 
 This repository contains the foundational scaffolding, containerized local infrastructure, database migrations, authentication engine, SMTP email subsystem, and the complete **Sign-up screen and secure sign-up backend** under tickets **AUTH-1** and **AUTH-2**.
 
@@ -8,7 +8,7 @@ This repository contains the foundational scaffolding, containerized local infra
 
 ## 1. Prerequisites
 
-Before running Qalam locally, ensure you have the following installed on your host system:
+Before running Alfaaz locally, ensure you have the following installed on your host system:
 
 - **Node.js**: v20.x or v22.x LTS
 - **npm**: v10.x or later
@@ -16,6 +16,7 @@ Before running Qalam locally, ensure you have the following installed on your ho
 - **OpenSSL**: for generating secure cryptographic secrets
 
 Verify installations:
+
 ```bash
 node -v
 npm -v
@@ -105,17 +106,17 @@ AUTH_SECRET="your-generated-base64-secret-here"
 
 ## 5. Environment Variables Reference
 
-| Variable | Purpose | Local Host Default | Docker Compose Service Value |
-| :--- | :--- | :--- | :--- |
-| `DATABASE_URL` | PostgreSQL connection string | `postgresql://qalam:qalam_dev_password@localhost:5432/qalam_dev` | `postgresql://qalam:qalam_dev_password@db:5432/qalam_dev` |
-| `AUTH_SECRET` | Cryptographic key for Better Auth tokens & sessions | Generated via `openssl rand -base64 32` | Generated via `openssl rand -base64 32` |
-| `BASE_URL` | Application root URL for auth callbacks | `http://localhost:3000` | `http://localhost:3000` |
-| `SMTP_HOST` | Hostname of SMTP server | `localhost` | `mailpit` |
-| `SMTP_PORT` | Port of SMTP server | `1025` | `1025` |
-| `SMTP_USER` | SMTP authentication user (optional for Mailpit) | *(empty)* | *(empty)* |
-| `SMTP_PASS` | SMTP authentication password (optional for Mailpit) | *(empty)* | *(empty)* |
-| `SMTP_FROM` | Default sender header | `Qalam <noreply@qalam.local>` | `Qalam <noreply@qalam.local>` |
-| `ALLOWED_EMAIL_DOMAINS` | Enforced email domain allowlist (comma-separated) | `gmail.com,outlook.com,hotmail.com,yahoo.com,icloud.com` | `gmail.com,outlook.com,hotmail.com,yahoo.com,icloud.com` |
+| Variable                | Purpose                                             | Local Host Default                                        | Docker Compose Service Value                             |
+| :---------------------- | :-------------------------------------------------- | :-------------------------------------------------------- | :------------------------------------------------------- |
+| `DATABASE_URL`          | PostgreSQL connection string                        | `postgresql://alfaaz:alfaaz123@localhost:5432/alfaaz_dev` | `postgresql://alfaaz:alfaaz123@db:5432/alfaaz_dev`       |
+| `AUTH_SECRET`           | Cryptographic key for Better Auth tokens & sessions | Generated via `openssl rand -base64 32`                   | Generated via `openssl rand -base64 32`                  |
+| `BASE_URL`              | Application root URL for auth callbacks             | `http://localhost:3000`                                   | `http://localhost:3000`                                  |
+| `SMTP_HOST`             | Hostname of SMTP server                             | `localhost`                                               | `mailpit`                                                |
+| `SMTP_PORT`             | Port of SMTP server                                 | `1025`                                                    | `1025`                                                   |
+| `SMTP_USER`             | SMTP authentication user (optional for Mailpit)     | _(empty)_                                                 | _(empty)_                                                |
+| `SMTP_PASS`             | SMTP authentication password (optional for Mailpit) | _(empty)_                                                 | _(empty)_                                                |
+| `SMTP_FROM`             | Default sender header                               | `Alfaaz <noreply@alfaaz.local>`                           | `Alfaaz <noreply@alfaaz.local>`                          |
+| `ALLOWED_EMAIL_DOMAINS` | Enforced email domain allowlist (comma-separated)   | `gmail.com,outlook.com,hotmail.com,yahoo.com,icloud.com`  | `gmail.com,outlook.com,hotmail.com,yahoo.com,icloud.com` |
 
 ---
 
@@ -148,7 +149,7 @@ docker compose ps
 - **Health Check API**: [http://localhost:3000/api/health](http://localhost:3000/api/health)
 - **Better Auth API**: [http://localhost:3000/api/auth/ok](http://localhost:3000/api/auth/ok)
 - **Mailpit Web Interface**: [http://localhost:8025](http://localhost:8025)
-- **PostgreSQL Database**: `localhost:5432` (`qalam` / `qalam_dev_password` / `qalam_dev`)
+- **PostgreSQL Database**: `localhost:5432` (`alfaaz` / `alfaaz123` / `alfaaz_dev`)
 
 ---
 
@@ -161,6 +162,7 @@ npm test
 ```
 
 Or run test files individually:
+
 ```bash
 # Validation unit tests (domains, passwords, names)
 node --import tsx --test tests/validation.test.ts
@@ -176,11 +178,13 @@ node --import tsx --test --test-force-exit tests/registration.test.ts
 Apply the generated SQL migrations to the PostgreSQL database:
 
 **Option A — From the host:**
+
 ```bash
 npm run db:migrate
 ```
 
 **Option B — Inside the running app container:**
+
 ```bash
 docker compose exec app npm run db:migrate
 ```
@@ -209,6 +213,7 @@ docker compose down -v
 ```
 
 To reinitialize from a clean state after resetting:
+
 ```bash
 docker compose up -d
 npm run db:migrate
