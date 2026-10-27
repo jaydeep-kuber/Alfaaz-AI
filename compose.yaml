@@ -22,7 +22,7 @@ services:
     environment:
       - NODE_ENV=development
       - PORT=3000
-      - DATABASE_URL=${DOCKER_DATABASE_URL:-postgresql://${POSTGRES_USER:-alfaaz}:${POSTGRES_PASSWORD:-alfaaz123}@db:5432/${POSTGRES_DB:-alfaaz_dev}}
+      - DATABASE_URL=${DOCKER_DATABASE_URL:-postgresql://${POSTGRES_USER:-alfaaz}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-alfaaz_dev}}
       - AUTH_SECRET=${AUTH_SECRET}
       - BASE_URL=${BASE_URL:-http://localhost:3000}
       - SMTP_HOST=mailpit
