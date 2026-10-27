@@ -37,15 +37,10 @@ function SignInContent() {
       });
 
       if (res?.error) {
-        const errCode = (res.error as any)?.code;
         const errMsg = res.error.message || "Invalid credentials.";
-        if (errCode === "EMAIL_NOT_VERIFIED" || errMsg.toLowerCase().includes("verify")) {
-          setErrorMessage("Your email address is not verified yet. Please check your inbox or verify your account.");
-        } else {
-          setErrorMessage(errMsg || "Invalid email or password. Please try again.");
-        }
+        setErrorMessage(errMsg || "Invalid email or password. Please try again.");
       } else {
-        router.refresh();
+        router.push("/");
       }
     } catch (err: any) {
       setErrorMessage(err?.message || "An unexpected error occurred during sign in.");

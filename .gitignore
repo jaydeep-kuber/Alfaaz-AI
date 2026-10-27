@@ -8,7 +8,23 @@ coverage/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Environment files and credentials
 .env*
 !.env.example
+*.pem
+*.key
+*.cert
+*.crt
+*.pfx
+*.p12
+*credential*.json
+*secret*.json
+service-account*.json
+
+# Build and deployment caches
 *.tsbuildinfo
 next-env.d.ts
+.turbo/
+.vercel/
+

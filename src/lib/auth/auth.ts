@@ -16,16 +16,15 @@ import {
  * Better Auth Server Configuration
  * Configured with official Drizzle ORM adapter for PostgreSQL.
  *
- * AUTH-2 Policies:
- * - autoSignIn: false (Strictly prevents creating session records or cookies on registration)
- * - requireEmailVerification: true (Stores users with emailVerified = false)
+ * Auth Policies:
+ * - autoSignIn: true (Session is created immediately after registration)
+ * - requireEmailVerification: false (No email OTP or verification step)
  * - Server-side before-hook intercepts sign-up attempts to enforce:
  *   1. Unicode/Devanagari names (2-50 chars, no empty/whitespace-only/digits/symbols)
  *   2. ALLOWED_EMAIL_DOMAINS exact domain allowlist (case-insensitive after trim)
  *   3. Duplicate email detection -> "This email is already registered."
  *   4. Password strength (length 10-128, zxcvbn score >= 3, email local-part exclusion)
  * - Database hook guarantees no user is created without matching the domain allowlist.
- * - No email delivery or sessions established.
  */
 export const auth = betterAuth({
   appName: APP_NAME,
@@ -42,8 +41,8 @@ export const auth = betterAuth({
   baseURL: env.BASE_URL,
   emailAndPassword: {
     enabled: true,
-    autoSignIn: false,
-    requireEmailVerification: process.env.REQUIRE_EMAIL_VERIFICATION === "true",
+    autoSignIn: true,
+    requireEmailVerification: false,
     minPasswordLength: 10,
     maxPasswordLength: 128,
   },

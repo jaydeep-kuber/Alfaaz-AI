@@ -52,16 +52,16 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      // Return success without creating a session or setting session cookies
+      // Session is created automatically by Better Auth (autoSignIn: true).
+      // Return success with redirect signal to home page.
       return NextResponse.json(
         {
           success: true,
-          message: "Account created. Sign in to verify your email.",
+          redirect: "/",
           user: {
             id: result.user.id,
             name: result.user.name,
             email: result.user.email,
-            emailVerified: result.user.emailVerified ?? false,
           },
         },
         { status: 201 }

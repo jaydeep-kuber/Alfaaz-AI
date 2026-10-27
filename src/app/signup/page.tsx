@@ -8,7 +8,6 @@ import {
   EyeOff,
   AlertCircle,
   Loader2,
-  CheckCircle2,
 } from "lucide-react";
 import {
   validateName,
@@ -180,10 +179,8 @@ export default function SignUpPage() {
           return;
         }
 
-        // Exact success redirect with the required message
-        const successMessage =
-          data.message || "Account created. Sign in to verify your email.";
-        router.push(`/signin?message=${encodeURIComponent(successMessage)}`);
+        // Redirect to home (session created by autoSignIn in Better Auth)
+        router.push(data.redirect || "/");
       } catch (err: any) {
         setGeneralError("Network error. Please verify your connection and try again.");
       }
